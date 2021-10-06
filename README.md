@@ -19,14 +19,7 @@ Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.
 
 ## Installation and running
 
-This app uses [pipenv](https://pipenv.pypa.io/en/latest/), a [good guide is here, too](https://realpython.com/pipenv-guide/) to install dependencies.
-We need
-* streamlit
-* geopandas _(Note: some platform do not automatically install descartes for map plotting, although pipenv should take care of this)._
-* pandas, numpy, matplotlib
+[Launch it on streamlit](https://share.streamlit.io/klausgpaul/ice-cover-comparisons/ice_cover_comparisons.py)
 
-## TODO
-
-* add country level selections
-* twitter button
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/klausgpaul/ice-cover-comparisons/ice_cover_comparisons.py)
 

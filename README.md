@@ -23,3 +23,6 @@ Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/klausgpaul/ice-cover-comparisons/ice_cover_comparisons.py)
 
+[Original idea](https://gitlab.com/KlausGPaul/climate-change)
+
+

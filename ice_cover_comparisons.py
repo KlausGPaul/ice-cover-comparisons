@@ -89,9 +89,6 @@ mpl.rcParams['ytick.color'] = COLOR
 
 st.header("""Arctic ice cover compared to a set of countires""")
 
-#st.sidebar.markdown("![Arctic Basecamp Logo](https://arcticbasecamp.org/wp-content/uploads/2020/06/navigation-logo.png)")
-st.sidebar.image("https://arcticbasecamp.org/wp-content/uploads/2020/06/navigation-logo.png")
-
 region = st.sidebar.empty()
 subregion = st.sidebar.empty()
 select_years_placeholder = st.sidebar.empty()
@@ -112,7 +109,7 @@ with st.spinner("Downloading World map from https://www.naturalearthdata.com and
     select_years = select_years_placeholder.slider(label="Compare Years",
         min_value=int(df.year.min()),
         max_value=int(df.year.max()),
-        value=(int(df.year.min()),int(datetime.date.today().year-1)),
+        value=(int(df.year.min()),int(datetime.date.today().year)),
         step=1)
 
 region_list = region.multiselect("Region",options=sorted(gdfWorld.REGION_UN.unique()),default="Europe")

@@ -72,7 +72,6 @@ def load_ice_extent_shapefile(year,month):
                 # so, during a month, the previous month's file is the only shapefile available.
                 # The extent data are usually current to the previous day.
                 if month > 1:
-                    st.sidebar.write(f"Trying one month before {year}-{month}")
                     refdate = pd.to_datetime("{}-{}-15".format(year,month))
                     url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
                     DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
@@ -81,9 +80,11 @@ def load_ice_extent_shapefile(year,month):
                     st.write("Problem with source data, suggest to select different year")
                     break
         #print(r)
+        
         Path(DIR).mkdir(exist_ok=True,parents=True)
         zf.extractall(DIR)
         
+    st.sidebar.write(f"Shapefile for {year} is for month {month} (shape files are only available after the end of a month)")
     for f in os.listdir(DIR):
         if ".shp" in f:
             gdfIceExtent = gpd.read_file(os.path.join(DIR,f))

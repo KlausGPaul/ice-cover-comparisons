@@ -72,10 +72,10 @@ def load_ice_extent_shapefile(year,month):
                 # so, during a month, the previous month's file is the only shapefile available.
                 # The extent data are usually current to the previous day.
                 if month > 1:
+                    month -= 1
                     refdate = pd.to_datetime("{}-{}-15".format(year,month))
                     url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
                     DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
-                    month -= 1
                 else:
                     st.write("Problem with source data, suggest to select different year")
                     break
@@ -112,7 +112,8 @@ st.header("""Arctic ice cover compared to a set of countires""")
 region = st.sidebar.empty()
 subregion = st.sidebar.empty()
 select_years_placeholder = st.sidebar.empty()
-method = st.sidebar.radio("Which value should we retrieve",options=["Minimum Sea Ice Extent in Year","Maximum Sea Ice Extent in Year"])
+method = st.sidebar.radio("Which value should we retrieve",
+options=["Minimum Sea Ice Extent in Year","Maximum Sea Ice Extent in Year"])
 
 st.markdown(body="""We have heard about it. But seeing it yourself, and getting a feel for the data is much better. 
     This notebook downloads northern hemisphere satellite images so you can compare arcitc sea ice extent over
@@ -126,10 +127,16 @@ with st.spinner("Downloading World map from https://www.naturalearthdata.com and
     dfIceExtents = df[["year","extent"]].pivot(columns="year",values="extent")
     data = [dfIceExtents[y].dropna().values for y in dfIceExtents.columns]
     st.sidebar.success("Got world map and updated latest sea ice extent data")
-    select_years = select_years_placeholder.slider(label="Compare Years",
+    # Make reasonable defaults: If we are calling the app pre-October, the actual minimum of the current year has
+    # not yet been reached
+    if int(datetime.date.today().month < 10):
+        use_year = int(datetime.date.today().year)-1
+    else:
+        use_year = int(datetime.date.today().year)
+    select_years = select_years_placeholder.slider(label="Compare Years (note that the minimum extent is usually seen in September, so the shapefile is availabe in October of a year)",
         min_value=int(df.year.min()),
         max_value=int(df.year.max()),
-        value=(int(df.year.min()),int(datetime.date.today().year)),
+        value=(int(df.year.min()),use_year),
         step=1)
 
 region_list = region.multiselect("Region",options=sorted(gdfWorld.REGION_UN.unique()),default="Europe")

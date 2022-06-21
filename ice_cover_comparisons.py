@@ -58,10 +58,29 @@ def load_ice_extent_shapefile(year,month):
     refdate = pd.to_datetime("{}-{}-15".format(year,month))
     url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
     DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
+    print("DIR",DIR)
     if not os.path.exists(DIR):
-        r = requests.get(url)
-        if r.ok:
-            zf = zipfile.ZipFile(io.BytesIO(r.content))
+        downloaded = False
+        while not downloaded:
+            r = requests.get(url)
+            if r.ok:
+                zf = zipfile.ZipFile(io.BytesIO(r.content))
+                downloaded = True
+            else:
+                # Quick and dirty fix. Fun fact, the streamlit app was tested towards the end of the year 2021, when
+                # the minimum extent had been in the months before. Actually, the shape file is only available after the end of a month,
+                # so, during a month, the previous month's file is the only shapefile available.
+                # The extent data are usually current to the previous day.
+                if month > 1:
+                    st.sidebar.write(f"Trying one month before {year}-{month}")
+                    refdate = pd.to_datetime("{}-{}-15".format(year,month))
+                    url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
+                    DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
+                    month -= 1
+                else:
+                    st.write("Problem with source data, suggest to select different year")
+                    break
+        #print(r)
         Path(DIR).mkdir(exist_ok=True,parents=True)
         zf.extractall(DIR)
         

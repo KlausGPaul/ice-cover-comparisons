@@ -12,11 +12,14 @@ import matplotlib as mpl
 import datetime
 
 def get_world():
-    url = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_map_subunits.zip"
-    DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","").replace("//","/")
+    #url = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_map_subunits.zip"
+    url = "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_map_subunits.zip"
+    DIR = "./sun"
     if not os.path.exists(DIR):
         headers = {'User-Agent': 'Arctic Sea Ice'}
-        r = requests.get(url,headers=headers)
+        r = requests.get(url,headers=headers, allow_redirects=True)
+        print(r)
+        #print(r.text)
         if r.ok:
             zf = zipfile.ZipFile(io.BytesIO(r.content))
         Path(DIR).mkdir(exist_ok=True,parents=True)
@@ -29,7 +32,7 @@ def get_world():
     return gdfWorld
 
 
-@st.cache
+@st.cache_data
 def download_sea_ice_extent(localpath="./sun"):
     filename = os.path.join(localpath,"N_seaice_extent_daily_v3.0.parquet")
     download = True
@@ -41,7 +44,7 @@ def download_sea_ice_extent(localpath="./sun"):
         else:
             download = True
     if download:
-        url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v3.0.csv"
+        url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v4.0.csv"
         r = requests.get(url)
         df = pd.read_csv(io.StringIO(r.text),skiprows=[1],header=0)
         for c in df.columns:
@@ -56,7 +59,7 @@ def download_sea_ice_extent(localpath="./sun"):
 
 def load_ice_extent_shapefile(year,month):
     refdate = pd.to_datetime("{}-{}-15".format(year,month))
-    url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
+    url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v4.0.zip".format(refdate,refdate,refdate)
     DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
     print("DIR",DIR)
     if not os.path.exists(DIR):
@@ -74,7 +77,7 @@ def load_ice_extent_shapefile(year,month):
                 if month > 1:
                     month -= 1
                     refdate = pd.to_datetime("{}-{}-15".format(year,month))
-                    url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v3.0.zip".format(refdate,refdate,refdate)
+                    url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/shapefiles/shp_extent/{:%m}_{:%b}/extent_N_{:%Y%m}_polygon_v4.0.zip".format(refdate,refdate,refdate)
                     DIR = "./sun"+urllib.parse.urlparse(url).path.replace(".zip","")
                 else:
                     st.write("Problem with source data, suggest to select different year")

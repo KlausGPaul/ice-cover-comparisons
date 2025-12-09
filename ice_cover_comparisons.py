@@ -1,3 +1,14 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "streamlit",
+#   "pandas",
+#   "requests",
+#   "geopandas",
+#   "matplotlib"
+# ]
+# ///
+
 import streamlit as st
 import pandas as pd
 import requests
@@ -17,7 +28,7 @@ def get_world():
     DIR = "./sun"
     if not os.path.exists(DIR):
         headers = {'User-Agent': 'Arctic Sea Ice'}
-        r = requests.get(url,headers=headers, allow_redirects=True)
+        r = requests.get(url,headers=headers, allow_redirects=True,verify=False)
         print(r)
         #print(r.text)
         if r.ok:
@@ -45,7 +56,7 @@ def download_sea_ice_extent(localpath="./sun"):
             download = True
     if download:
         url = "http://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v4.0.csv"
-        r = requests.get(url)
+        r = requests.get(url,verify=False)
         df = pd.read_csv(io.StringIO(r.text),skiprows=[1],header=0)
         for c in df.columns:
             df.rename(columns={c:c.strip().lower()},inplace=True)
@@ -65,7 +76,7 @@ def load_ice_extent_shapefile(year,month):
     if not os.path.exists(DIR):
         downloaded = False
         while not downloaded:
-            r = requests.get(url)
+            r = requests.get(url,verify=False)
             if r.ok:
                 zf = zipfile.ZipFile(io.BytesIO(r.content))
                 downloaded = True
